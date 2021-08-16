@@ -15,3 +15,4 @@ nb = "1"
 # stm32f3xx-hal = { version = "0.7.0", features = ["ld", "rt", "stm32f303xc"] }
 f3 = "0.6.1"
 embedded-hal = "0.2.4"
+embedded-sdmmc = "0.3.0"
