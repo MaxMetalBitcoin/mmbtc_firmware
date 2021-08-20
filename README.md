@@ -12,4 +12,4 @@ Will need in future:
 `/hw_discovery` holds code to run this firmware on an STM32F3 Discovery device.
 `/state_mgmt` holds code to manage the state of the app - will be dependency injected for access to peripherals (or mocked periphs for sim)
 `/simulator` holds code to run a simulated version of the hww on a mac
-
+`full_app_test` holds code to play around with RTIC to run the app. Not sure I like it
