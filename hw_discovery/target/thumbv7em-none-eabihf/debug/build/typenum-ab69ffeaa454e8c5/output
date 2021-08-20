@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/maxdignan/Documents/Bitcoin/hardware_wallets/groundup/target/thumbv7em-none-eabihf/debug/build/typenum-ab69ffeaa454e8c5/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/Users/maxdignan/Documents/Bitcoin/hardware_wallets/groundup/target/thumbv7em-none-eabihf/debug/build/typenum-ab69ffeaa454e8c5/out/op.rs
