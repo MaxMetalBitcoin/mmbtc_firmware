@@ -12,3 +12,4 @@ embedded-graphics-simulator = "0.2.1"
 tinytga = { version = "0.3.2", features = [ "graphics" ] }
 tinybmp = { version = "0.2.2", features = [ "graphics" ] }
 sdl2 = "0.32.2"
+state_mgmt = { path = "../state_mgmt" }
