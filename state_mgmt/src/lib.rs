@@ -17,19 +17,14 @@ use embedded_graphics::{
     text_style, DrawTarget,
 };
 
-use embedded_graphics_simulator::SimulatorDisplay;
-
-#[derive(Debug, Clone, Copy)]
-pub struct PromptScreenState {
-    pub prompt: &'static str,
-    pub choices: &'static Vec<&'static str, 20>,
-}
+mod display_type;
+pub mod prompt_screen_state;
 
 #[derive(Debug)]
 pub enum Screen {
     LoadScreen,
     ChooseNetworkScreen,
-    PromptScreen(PromptScreenState),
+    PromptScreen(prompt_screen_state::PromptScreenState),
 }
 
 #[derive(Debug)]
@@ -38,14 +33,7 @@ pub struct MMState {
     pub currentScreen: Screen,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub enum MMStateAction {
-    Up,
-    Down,
-    Left,
-    Right,
-    Enter,
-}
+pub mod mm_state_action;
 
 impl MMState {
     pub fn new() -> MMState {
@@ -55,29 +43,38 @@ impl MMState {
         }
     }
 
-    pub fn updateState(&mut self, action: MMStateAction) -> bool {
-        match self.currentScreen {
+    pub fn updateState(
+        &mut self,
+        action: prompt_screen_state::mm_state_action::MMStateAction,
+    ) -> bool {
+        match &mut self.currentScreen {
             Screen::LoadScreen => {
-                if (action == MMStateAction::Enter) {
-                    static choices: &'static Vec<&'static str, 20> = &Vec::new();
-                    self.currentScreen = Screen::PromptScreen(PromptScreenState {
-                        prompt: "Choose your network:",
-                        choices: &choices,
-                    });
+                if (action == prompt_screen_state::mm_state_action::MMStateAction::Enter) {
+                    let mut choices: Vec<&'static str, 20> = Vec::new();
+                    choices.push(" Main");
+                    choices.push(" Testnet");
+                    choices.push(" Signet");
+                    self.currentScreen =
+                        Screen::PromptScreen(prompt_screen_state::PromptScreenState {
+                            prompt: "Choose your network:",
+                            choices: choices,
+                            hover_index: 0,
+                        });
                     true
                 } else {
                     false
                 }
             }
+            Screen::PromptScreen(prompt_screen_state) => prompt_screen_state.updateState(action),
             _ => false,
         }
     }
 
     pub fn render(
         &self,
-        mut display: SimulatorDisplay<BinaryColor>,
-    ) -> Result<(SimulatorDisplay<BinaryColor>), Error> {
-        match self.currentScreen {
+        mut display: display_type::DisplayType,
+    ) -> Result<(display_type::DisplayType), Error> {
+        match &self.currentScreen {
             Screen::LoadScreen => {
                 let text_style = text_style!(
                     font = Font6x8,
@@ -90,15 +87,8 @@ impl MMState {
                     .draw(&mut display);
             }
 
-            Screen::PromptScreen(promptScreenState) => {
-                let text_style = text_style!(
-                    font = Font6x8,
-                    text_color = BinaryColor::On,
-                    background_color = BinaryColor::Off,
-                );
-                Text::new(promptScreenState.prompt, Point::new(5, 5))
-                    .into_styled(text_style)
-                    .draw(&mut display);
+            Screen::PromptScreen(prompt_screen_state) => {
+                display = prompt_screen_state.render(display).unwrap()
             }
 
             _ => {

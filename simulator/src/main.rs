@@ -10,7 +10,7 @@ use embedded_graphics_simulator::{
     BinaryColorTheme, OutputSettingsBuilder, SimulatorDisplay, SimulatorEvent, Window,
 };
 
-use state_mgmt::{MMState, MMStateAction};
+use state_mgmt::{mm_state_action::MMStateAction, MMState};
 
 const PX_WIDTH: u32 = 296;
 const PX_HEIGHT: u32 = 152;
@@ -33,64 +33,68 @@ fn main() -> Result<(), core::convert::Infallible> {
         for event in window.events() {
             match event {
                 SimulatorEvent::Quit => break 'running,
-                SimulatorEvent::KeyDown { keycode, .. } => match keycode {
-                    sdl2::keyboard::Keycode::Up => {
-                        println!("{:?}", state);
+                SimulatorEvent::KeyDown { keycode, .. } => {
+                    match keycode {
+                        sdl2::keyboard::Keycode::Up => {
+                            println!("{:?}", state);
 
-                        let did_update = state.updateState(MMStateAction::Up);
-                        println!("{:?}", state);
+                            let did_update = state.updateState(
+                                state_mgmt::prompt_screen_state::mm_state_action::MMStateAction::Up,
+                            );
+                            println!("{:?}", state);
 
-                        if did_update {
-                            display.clear(BinaryColor::Off);
-                            display = state.render(display).unwrap();
+                            if did_update {
+                                display.clear(BinaryColor::Off);
+                                display = state.render(display).unwrap();
+                            }
                         }
-                    }
-                    sdl2::keyboard::Keycode::Down => {
-                        println!("{:?}", state);
+                        sdl2::keyboard::Keycode::Down => {
+                            println!("{:?}", state);
 
-                        let did_update = state.updateState(MMStateAction::Down);
-                        println!("{:?}", state);
+                            let did_update = state.updateState(state_mgmt::prompt_screen_state::mm_state_action::MMStateAction::Down);
+                            println!("{:?}", state);
 
-                        if did_update {
-                            display.clear(BinaryColor::Off);
-                            display = state.render(display).unwrap();
+                            if did_update {
+                                display.clear(BinaryColor::Off);
+                                display = state.render(display).unwrap();
+                            }
                         }
-                    }
-                    sdl2::keyboard::Keycode::Left => {
-                        println!("{:?}", state);
+                        sdl2::keyboard::Keycode::Left => {
+                            println!("{:?}", state);
 
-                        let did_update = state.updateState(MMStateAction::Left);
-                        println!("{:?}", state);
+                            let did_update = state.updateState(state_mgmt::prompt_screen_state::mm_state_action::MMStateAction::Left);
+                            println!("{:?}", state);
 
-                        if did_update {
-                            display.clear(BinaryColor::Off);
-                            display = state.render(display).unwrap();
+                            if did_update {
+                                display.clear(BinaryColor::Off);
+                                display = state.render(display).unwrap();
+                            }
                         }
-                    }
-                    sdl2::keyboard::Keycode::Right => {
-                        println!("{:?}", state);
+                        sdl2::keyboard::Keycode::Right => {
+                            println!("{:?}", state);
 
-                        let did_update = state.updateState(MMStateAction::Right);
-                        println!("{:?}", state);
+                            let did_update = state.updateState(state_mgmt::prompt_screen_state::mm_state_action::MMStateAction::Right);
+                            println!("{:?}", state);
 
-                        if did_update {
-                            display.clear(BinaryColor::Off);
-                            display = state.render(display).unwrap();
+                            if did_update {
+                                display.clear(BinaryColor::Off);
+                                display = state.render(display).unwrap();
+                            }
                         }
-                    }
-                    sdl2::keyboard::Keycode::Return => {
-                        println!("{:?}", state);
+                        sdl2::keyboard::Keycode::Return => {
+                            println!("{:?}", state);
 
-                        let did_update = state.updateState(MMStateAction::Enter);
-                        println!("{:?}", state);
+                            let did_update = state.updateState(state_mgmt::prompt_screen_state::mm_state_action::MMStateAction::Enter);
+                            println!("{:?}", state);
 
-                        if did_update {
-                            display.clear(BinaryColor::Off);
-                            display = state.render(display).unwrap();
+                            if did_update {
+                                display.clear(BinaryColor::Off);
+                                display = state.render(display).unwrap();
+                            }
                         }
+                        _ => {}
                     }
-                    _ => {}
-                },
+                }
                 _ => {}
             }
         }
