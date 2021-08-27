@@ -10,7 +10,7 @@ use embedded_graphics_simulator::{
     BinaryColorTheme, OutputSettingsBuilder, SimulatorDisplay, SimulatorEvent, Window,
 };
 
-use state_mgmt::MMState;
+use state_mgmt::{MMState, MMStateAction};
 
 const PX_WIDTH: u32 = 296;
 const PX_HEIGHT: u32 = 152;
@@ -18,10 +18,83 @@ const PX_HEIGHT: u32 = 152;
 fn main() -> Result<(), core::convert::Infallible> {
     let mut state = MMState::new();
 
+    let output_settings = OutputSettingsBuilder::new()
+        .theme(BinaryColorTheme::Default)
+        .build();
+    let mut window = Window::new("Hello World", &output_settings);
     let mut display: SimulatorDisplay<BinaryColor> =
         SimulatorDisplay::new(Size::new(PX_WIDTH, PX_HEIGHT));
 
+    window.update(&display);
     display = state.render(display).unwrap();
+
+    'running: loop {
+        window.update(&display);
+        for event in window.events() {
+            match event {
+                SimulatorEvent::Quit => break 'running,
+                SimulatorEvent::KeyDown { keycode, .. } => match keycode {
+                    sdl2::keyboard::Keycode::Up => {
+                        println!("{:?}", state);
+
+                        let did_update = state.updateState(MMStateAction::Up);
+                        println!("{:?}", state);
+
+                        if did_update {
+                            display.clear(BinaryColor::Off);
+                            display = state.render(display).unwrap();
+                        }
+                    }
+                    sdl2::keyboard::Keycode::Down => {
+                        println!("{:?}", state);
+
+                        let did_update = state.updateState(MMStateAction::Down);
+                        println!("{:?}", state);
+
+                        if did_update {
+                            display.clear(BinaryColor::Off);
+                            display = state.render(display).unwrap();
+                        }
+                    }
+                    sdl2::keyboard::Keycode::Left => {
+                        println!("{:?}", state);
+
+                        let did_update = state.updateState(MMStateAction::Left);
+                        println!("{:?}", state);
+
+                        if did_update {
+                            display.clear(BinaryColor::Off);
+                            display = state.render(display).unwrap();
+                        }
+                    }
+                    sdl2::keyboard::Keycode::Right => {
+                        println!("{:?}", state);
+
+                        let did_update = state.updateState(MMStateAction::Right);
+                        println!("{:?}", state);
+
+                        if did_update {
+                            display.clear(BinaryColor::Off);
+                            display = state.render(display).unwrap();
+                        }
+                    }
+                    sdl2::keyboard::Keycode::Return => {
+                        println!("{:?}", state);
+
+                        let did_update = state.updateState(MMStateAction::Enter);
+                        println!("{:?}", state);
+
+                        if did_update {
+                            display.clear(BinaryColor::Off);
+                            display = state.render(display).unwrap();
+                        }
+                    }
+                    _ => {}
+                },
+                _ => {}
+            }
+        }
+    }
 
     // // let line_style = PrimitiveStyle::with_stroke(BinaryColor::On, 1);
     // // let line_style = Line::new(Point::new())
@@ -51,11 +124,6 @@ fn main() -> Result<(), core::convert::Infallible> {
     // Text::new("Hello World!", Point::new(5, 5))
     //     .into_styled(text_style)
     //     .draw(&mut display)?;
-
-    let output_settings = OutputSettingsBuilder::new()
-        .theme(BinaryColorTheme::Default)
-        .build();
-    Window::new("Hello World", &output_settings).show_static(&display);
 
     Ok(())
 }
