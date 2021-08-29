@@ -17,7 +17,8 @@ use embedded_graphics::{
     text_style, DrawTarget,
 };
 
-mod display_type;
+pub mod display_type;
+pub mod mm_state_action;
 pub mod prompt_screen_state;
 
 #[derive(Debug)]
@@ -33,8 +34,6 @@ pub struct MMState {
     pub currentScreen: Screen,
 }
 
-pub mod mm_state_action;
-
 impl MMState {
     pub fn new() -> MMState {
         MMState {
@@ -43,13 +42,10 @@ impl MMState {
         }
     }
 
-    pub fn updateState(
-        &mut self,
-        action: prompt_screen_state::mm_state_action::MMStateAction,
-    ) -> bool {
+    pub fn updateState(&mut self, action: mm_state_action::MMStateAction) -> bool {
         match &mut self.currentScreen {
             Screen::LoadScreen => {
-                if (action == prompt_screen_state::mm_state_action::MMStateAction::Enter) {
+                if (action == mm_state_action::MMStateAction::Enter) {
                     let mut choices: Vec<&'static str, 20> = Vec::new();
                     choices.push(" Main");
                     choices.push(" Testnet");

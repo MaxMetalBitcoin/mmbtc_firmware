@@ -12,10 +12,8 @@ use embedded_graphics::{
 };
 use heapless::{String, Vec};
 
-#[path = "./display_type.rs"]
-mod display_type;
-#[path = "./mm_state_action.rs"]
-pub mod mm_state_action;
+use crate::display_type;
+use crate::mm_state_action;
 
 #[derive(Debug, Clone)]
 pub struct PromptScreenState {
