@@ -4,13 +4,11 @@ use core::fmt::Error;
 use embedded_graphics::{
     drawable::Drawable,
     fonts::{Font6x8, Text},
-    mock_display::MockDisplay,
-    pixelcolor::{BinaryColor, PixelColor},
+    pixelcolor::BinaryColor,
     prelude::*,
-    primitives::{Circle, Line, Rectangle},
-    text_style, DrawTarget,
+    text_style,
 };
-use heapless::{String, Vec};
+use heapless::Vec;
 
 use crate::display_type;
 use crate::mm_state_action;
@@ -26,7 +24,7 @@ impl PromptScreenState {
     pub fn render(
         &self,
         mut display: display_type::DisplayType,
-    ) -> (Result<(display_type::DisplayType), Error>) {
+    ) -> Result<display_type::DisplayType, Error> {
         let regular_text_style = text_style!(
             font = Font6x8,
             text_color = BinaryColor::On,
@@ -39,33 +37,36 @@ impl PromptScreenState {
         );
         Text::new(self.prompt, Point::new(5, 5))
             .into_styled(regular_text_style)
-            .draw(&mut display);
+            .draw(&mut display)
+            .unwrap();
 
-        let fontHeight = 8;
-        let fontSpacingBuffer = 4;
+        let font_height = 8;
+        let font_spacing_buffer = 4;
         let prompt_spacing_buffer = 4;
-        let mut startingPoint = 5 + fontHeight + fontSpacingBuffer + prompt_spacing_buffer;
+        let mut starting_point = 5 + font_height + font_spacing_buffer + prompt_spacing_buffer;
         let mut index = 0;
 
         for choice in self.choices.iter() {
-            if (index == self.hover_index) {
-                Text::new(choice, Point::new(5, startingPoint))
+            if index == self.hover_index {
+                Text::new(choice, Point::new(5, starting_point))
                     .into_styled(hover_text_style)
-                    .draw(&mut display);
+                    .draw(&mut display)
+                    .unwrap();
             } else {
-                Text::new(choice, Point::new(5, startingPoint))
+                Text::new(choice, Point::new(5, starting_point))
                     .into_styled(regular_text_style)
-                    .draw(&mut display);
+                    .draw(&mut display)
+                    .unwrap();
             }
 
             index += 1;
-            startingPoint += fontHeight + fontSpacingBuffer;
+            starting_point += font_height + font_spacing_buffer;
         }
 
         Ok(display)
     }
 
-    pub fn updateState(&mut self, action: mm_state_action::MMStateAction) -> bool {
+    pub fn update_state(&mut self, action: mm_state_action::MMStateAction) -> bool {
         match action {
             mm_state_action::MMStateAction::Down => {
                 if self.hover_index < self.choices.len() as u16 - 1 {

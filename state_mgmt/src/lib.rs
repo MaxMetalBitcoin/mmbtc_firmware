@@ -1,20 +1,17 @@
 #![no_std]
 
-use core::array;
 use core::fmt::Error;
 use core::str;
 
-use heapless::{String, Vec};
+use heapless::Vec;
 
 // use alloc::vec::Vec;
 use embedded_graphics::{
     drawable::Drawable,
     fonts::{Font6x8, Text},
-    mock_display::MockDisplay,
-    pixelcolor::{BinaryColor, PixelColor},
+    pixelcolor::BinaryColor,
     prelude::*,
-    primitives::{Circle, Line, Rectangle},
-    text_style, DrawTarget,
+    text_style,
 };
 
 pub mod display_type;
@@ -31,26 +28,26 @@ pub enum Screen {
 #[derive(Debug)]
 pub struct MMState {
     pub network: &'static str,
-    pub currentScreen: Screen,
+    pub current_screen: Screen,
 }
 
 impl MMState {
     pub fn new() -> MMState {
         MMState {
             network: "testnet",
-            currentScreen: Screen::LoadScreen,
+            current_screen: Screen::LoadScreen,
         }
     }
 
-    pub fn updateState(&mut self, action: mm_state_action::MMStateAction) -> bool {
-        match &mut self.currentScreen {
+    pub fn update_state(&mut self, action: mm_state_action::MMStateAction) -> bool {
+        match &mut self.current_screen {
             Screen::LoadScreen => {
-                if (action == mm_state_action::MMStateAction::Enter) {
+                if action == mm_state_action::MMStateAction::Enter {
                     let mut choices: Vec<&'static str, 20> = Vec::new();
-                    choices.push(" Main");
-                    choices.push(" Testnet");
-                    choices.push(" Signet");
-                    self.currentScreen =
+                    choices.push(" Main").unwrap();
+                    choices.push(" Testnet").unwrap();
+                    choices.push(" Signet").unwrap();
+                    self.current_screen =
                         Screen::PromptScreen(prompt_screen_state::PromptScreenState {
                             prompt: "Choose your network:",
                             choices: choices,
@@ -61,7 +58,7 @@ impl MMState {
                     false
                 }
             }
-            Screen::PromptScreen(prompt_screen_state) => prompt_screen_state.updateState(action),
+            Screen::PromptScreen(prompt_screen_state) => prompt_screen_state.update_state(action),
             _ => false,
         }
     }
@@ -69,8 +66,8 @@ impl MMState {
     pub fn render(
         &self,
         mut display: display_type::DisplayType,
-    ) -> Result<(display_type::DisplayType), Error> {
-        match &self.currentScreen {
+    ) -> Result<display_type::DisplayType, Error> {
+        match &self.current_screen {
             Screen::LoadScreen => {
                 let text_style = text_style!(
                     font = Font6x8,
@@ -80,7 +77,8 @@ impl MMState {
 
                 Text::new("Loading...", Point::new(5, 5))
                     .into_styled(text_style)
-                    .draw(&mut display);
+                    .draw(&mut display)
+                    .unwrap();
             }
 
             Screen::PromptScreen(prompt_screen_state) => {
@@ -95,10 +93,11 @@ impl MMState {
                 );
                 Text::new("Invalid state", Point::new(5, 5))
                     .into_styled(text_style)
-                    .draw(&mut display);
+                    .draw(&mut display)
+                    .unwrap();
             }
         }
 
-        Ok((display))
+        Ok(display)
     }
 }

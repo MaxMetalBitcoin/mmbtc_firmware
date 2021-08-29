@@ -43,7 +43,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                     sdl2::keyboard::Keycode::Up => {
                         println!("{:?}", state);
 
-                        let did_update = state.updateState(mm_state_action::MMStateAction::Up);
+                        let did_update = state.update_state(mm_state_action::MMStateAction::Up);
                         println!("{:?}", state);
 
                         if did_update {
@@ -54,7 +54,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                     sdl2::keyboard::Keycode::Down => {
                         println!("{:?}", state);
 
-                        let did_update = state.updateState(mm_state_action::MMStateAction::Down);
+                        let did_update = state.update_state(mm_state_action::MMStateAction::Down);
                         println!("{:?}", state);
 
                         if did_update {
@@ -65,7 +65,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                     sdl2::keyboard::Keycode::Left => {
                         println!("{:?}", state);
 
-                        let did_update = state.updateState(mm_state_action::MMStateAction::Left);
+                        let did_update = state.update_state(mm_state_action::MMStateAction::Left);
                         println!("{:?}", state);
 
                         if did_update {
@@ -76,7 +76,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                     sdl2::keyboard::Keycode::Right => {
                         println!("{:?}", state);
 
-                        let did_update = state.updateState(mm_state_action::MMStateAction::Right);
+                        let did_update = state.update_state(mm_state_action::MMStateAction::Right);
                         println!("{:?}", state);
 
                         if did_update {
@@ -87,7 +87,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                     sdl2::keyboard::Keycode::Return => {
                         println!("{:?}", state);
 
-                        let did_update = state.updateState(mm_state_action::MMStateAction::Enter);
+                        let did_update = state.update_state(mm_state_action::MMStateAction::Enter);
                         println!("{:?}", state);
 
                         if did_update {
