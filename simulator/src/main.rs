@@ -1,11 +1,4 @@
-use embedded_graphics::{
-    fonts::{Font6x8, Text},
-    mock_display::MockDisplay,
-    pixelcolor::BinaryColor,
-    prelude::*,
-    primitives::{Circle, Line, Rectangle},
-    text_style, DrawTarget,
-};
+use embedded_graphics::{pixelcolor::BinaryColor, prelude::*, DrawTarget};
 use embedded_graphics_simulator::{
     BinaryColorTheme, OutputSettingsBuilder, SimulatorDisplay, SimulatorEvent, Window,
 };
@@ -21,7 +14,7 @@ fn main() -> Result<(), core::convert::Infallible> {
     let output_settings = OutputSettingsBuilder::new()
         .theme(BinaryColorTheme::Default)
         .build();
-    let mut window = Window::new("Hello World", &output_settings);
+    let mut window = Window::new("Max Metal Bitcoin HWW", &output_settings);
     let mut display: SimulatorDisplay<BinaryColor> =
         SimulatorDisplay::new(Size::new(PX_WIDTH, PX_HEIGHT));
 
@@ -54,7 +47,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                         println!("{:?}", state);
 
                         if did_update {
-                            display.clear(BinaryColor::Off);
+                            display.clear(BinaryColor::Off).unwrap();
                             display = state.render(display).unwrap();
                         }
                     }
@@ -65,7 +58,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                         println!("{:?}", state);
 
                         if did_update {
-                            display.clear(BinaryColor::Off);
+                            display.clear(BinaryColor::Off).unwrap();
                             display = state.render(display).unwrap();
                         }
                     }
@@ -76,7 +69,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                         println!("{:?}", state);
 
                         if did_update {
-                            display.clear(BinaryColor::Off);
+                            display.clear(BinaryColor::Off).unwrap();
                             display = state.render(display).unwrap();
                         }
                     }
@@ -87,7 +80,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                         println!("{:?}", state);
 
                         if did_update {
-                            display.clear(BinaryColor::Off);
+                            display.clear(BinaryColor::Off).unwrap();
                             display = state.render(display).unwrap();
                         }
                     }
@@ -98,7 +91,7 @@ fn main() -> Result<(), core::convert::Infallible> {
                         println!("{:?}", state);
 
                         if did_update {
-                            display.clear(BinaryColor::Off);
+                            display.clear(BinaryColor::Off).unwrap();
                             display = state.render(display).unwrap();
                         }
                     }
