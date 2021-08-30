@@ -15,14 +15,14 @@ use embedded_graphics::{
 };
 
 pub mod display_type;
+pub mod menu;
 pub mod mm_state_action;
 pub mod prompt_screen_state;
 
 #[derive(Debug)]
 pub enum Screen {
     LoadScreen,
-    ChooseNetworkScreen,
-    PromptScreen(prompt_screen_state::PromptScreenState),
+    PromptScreen(menu::choose_network_menu::ChooseNetworkScreen),
 }
 
 #[derive(Debug)]
@@ -43,16 +43,9 @@ impl MMState {
         match &mut self.current_screen {
             Screen::LoadScreen => {
                 if action == mm_state_action::MMStateAction::Enter {
-                    let mut choices: Vec<&'static str, 20> = Vec::new();
-                    choices.push(" Main").unwrap();
-                    choices.push(" Testnet").unwrap();
-                    choices.push(" Signet").unwrap();
-                    self.current_screen =
-                        Screen::PromptScreen(prompt_screen_state::PromptScreenState {
-                            prompt: "Choose your network:",
-                            choices: choices,
-                            hover_index: 0,
-                        });
+                    self.current_screen = Screen::PromptScreen(
+                        menu::choose_network_menu::ChooseNetworkScreen::init(),
+                    );
                     true
                 } else {
                     false
