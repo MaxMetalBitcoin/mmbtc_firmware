@@ -7,7 +7,6 @@ use core::fmt::Error;
 use heapless::Vec;
 
 use crate::menu::prompt_screen_state;
-use crate::menu::PromptScreenTrait;
 
 #[derive(Debug, Clone)]
 pub struct ChooseNetworkMenu {
