@@ -13,27 +13,29 @@ use embedded_graphics::{
     prelude::*,
     text_style,
 };
+use menu::menu_screen_state::MenuScreenState;
 
 pub mod display_type;
 pub mod menu;
 pub mod mm_state_action;
+pub mod networks;
 
 #[derive(Debug)]
 pub enum Screen {
     LoadScreen,
-    PromptScreen(menu::MenuTypes),
+    MenuScreen(menu::menu_screen_state::MenuScreenState),
 }
 
 #[derive(Debug)]
 pub struct MMState {
-    pub network: &'static str,
+    pub network: networks::Networks,
     pub current_screen: Screen,
 }
 
 impl MMState {
     pub fn new() -> MMState {
         MMState {
-            network: "testnet",
+            network: networks::Networks::Testnet,
             current_screen: Screen::LoadScreen,
         }
     }
@@ -43,17 +45,20 @@ impl MMState {
             Screen::LoadScreen => {
                 if action == mm_state_action::MMStateAction::Enter {
                     self.current_screen =
-                        Screen::PromptScreen(menu::MenuTypes::ChooseNetworkMenuType(
-                            menu::choose_network_menu::ChooseNetworkMenu::init(),
-                        ));
+                        Screen::MenuScreen(MenuScreenState::init_choose_network_menu());
                     true
                 } else {
                     false
                 }
             }
-            Screen::PromptScreen(menu_type) => match menu_type {
-                menu::MenuTypes::ChooseNetworkMenuType(choose_network_menu) => {
-                    choose_network_menu.update_state(action)
+            Screen::MenuScreen(menu_screen_state) => match menu_screen_state.menu_type {
+                menu::menu_screen_state::MenuTypes::ChooseNetworkMenuType => {
+                    if action == mm_state_action::MMStateAction::Enter {
+                        self.network = menu_screen_state.get_network_from_choice();
+                        true
+                    } else {
+                        menu_screen_state.update_state(action)
+                    }
                 }
                 _ => false,
             },
@@ -79,9 +84,9 @@ impl MMState {
                     .unwrap();
             }
 
-            Screen::PromptScreen(menu_type) => match menu_type {
-                menu::MenuTypes::ChooseNetworkMenuType(choose_network_menu) => {
-                    display = choose_network_menu.render(display).unwrap()
+            Screen::MenuScreen(menu_screen_state) => match menu_screen_state.menu_type {
+                menu::menu_screen_state::MenuTypes::ChooseNetworkMenuType => {
+                    display = menu_screen_state.render(display).unwrap()
                 }
             },
 
