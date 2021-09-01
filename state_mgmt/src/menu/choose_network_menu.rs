@@ -9,14 +9,13 @@ use heapless::Vec;
 use crate::menu::prompt_screen_state;
 use crate::menu::PromptScreenTrait;
 
-
 #[derive(Debug, Clone)]
-pub struct ChooseNetworkScreen {
+pub struct ChooseNetworkMenu {
     pub prompt_screen_state: prompt_screen_state::PromptScreenState,
 }
 
-impl ChooseNetworkScreen {
-    pub fn init() -> ChooseNetworkScreen {
+impl ChooseNetworkMenu {
+    pub fn init() -> ChooseNetworkMenu {
         let mut choices: Vec<&'static str, 20> = Vec::new();
         choices.push(" Main").unwrap();
         choices.push(" Testnet").unwrap();

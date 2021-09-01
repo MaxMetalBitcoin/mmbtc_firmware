@@ -21,7 +21,7 @@ pub mod mm_state_action;
 #[derive(Debug)]
 pub enum Screen {
     LoadScreen,
-    PromptScreen(menu::choose_network_menu::ChooseNetworkScreen),
+    PromptScreen(menu::MenuTypes),
 }
 
 #[derive(Debug)]
@@ -42,15 +42,21 @@ impl MMState {
         match &mut self.current_screen {
             Screen::LoadScreen => {
                 if action == mm_state_action::MMStateAction::Enter {
-                    self.current_screen = Screen::PromptScreen(
-                        menu::choose_network_menu::ChooseNetworkScreen::init(),
-                    );
+                    self.current_screen =
+                        Screen::PromptScreen(menu::MenuTypes::ChooseNetworkMenuType(
+                            menu::choose_network_menu::ChooseNetworkMenu::init(),
+                        ));
                     true
                 } else {
                     false
                 }
             }
-            Screen::PromptScreen(prompt_screen_state) => prompt_screen_state.update_state(action),
+            Screen::PromptScreen(menu_type) => match menu_type {
+                menu::MenuTypes::ChooseNetworkMenuType(choose_network_menu) => {
+                    choose_network_menu.update_state(action)
+                }
+                _ => false,
+            },
             _ => false,
         }
     }
@@ -73,9 +79,11 @@ impl MMState {
                     .unwrap();
             }
 
-            Screen::PromptScreen(prompt_screen_state) => {
-                display = prompt_screen_state.render(display).unwrap()
-            }
+            Screen::PromptScreen(menu_type) => match menu_type {
+                menu::MenuTypes::ChooseNetworkMenuType(choose_network_menu) => {
+                    display = choose_network_menu.render(display).unwrap()
+                }
+            },
 
             _ => {
                 let text_style = text_style!(
