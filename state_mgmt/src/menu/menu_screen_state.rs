@@ -20,14 +20,14 @@ pub enum MenuTypes {
 }
 
 #[derive(Debug, Clone)]
-pub struct MenuScreenState {
+pub struct MenuScreenTypesState {
     pub prompt: &'static str,
     pub choices: Vec<&'static str, 20>,
     pub hover_index: u16,
     pub menu_type: MenuTypes,
 }
 
-impl MenuScreenState {
+impl MenuScreenTypesState {
     pub fn init_choose_network_menu() -> Self {
         let mut choices: Vec<&'static str, 20> = Vec::new();
 

@@ -3,7 +3,7 @@ use embedded_graphics_simulator::{
     BinaryColorTheme, OutputSettingsBuilder, SimulatorDisplay, SimulatorEvent, Window,
 };
 
-use state_mgmt::{mm_state_action, MMState};
+use state_mgmt::{mm_state::MMState, mm_state_action};
 
 const PX_WIDTH: u32 = 296;
 const PX_HEIGHT: u32 = 152;
