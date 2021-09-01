@@ -2,14 +2,17 @@
 
 use crate::display_type;
 use crate::mm_state_action::MMStateAction;
-use crate::prompt_screen_state::PromptScreenState;
 use crate::Screen;
 use core::fmt::Error;
 use heapless::Vec;
 
+use crate::menu::prompt_screen_state;
+use crate::menu::PromptScreenTrait;
+
+
 #[derive(Debug, Clone)]
 pub struct ChooseNetworkScreen {
-    pub prompt_screen_state: PromptScreenState,
+    pub prompt_screen_state: prompt_screen_state::PromptScreenState,
 }
 
 impl ChooseNetworkScreen {
@@ -20,7 +23,7 @@ impl ChooseNetworkScreen {
         choices.push(" Signet").unwrap();
 
         Self {
-            prompt_screen_state: PromptScreenState {
+            prompt_screen_state: prompt_screen_state::PromptScreenState {
                 prompt: "Choose your network:",
                 choices: choices,
                 hover_index: 0,

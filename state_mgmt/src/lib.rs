@@ -17,7 +17,6 @@ use embedded_graphics::{
 pub mod display_type;
 pub mod menu;
 pub mod mm_state_action;
-pub mod prompt_screen_state;
 
 #[derive(Debug)]
 pub enum Screen {
