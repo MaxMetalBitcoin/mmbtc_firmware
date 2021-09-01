@@ -10,6 +10,7 @@ use embedded_graphics::{
 };
 use heapless::Vec;
 
+use crate::menu::choose_network_menu_helpers;
 use crate::mm_state_action;
 use crate::networks;
 use crate::{display_type, networks::Networks};
@@ -28,29 +29,15 @@ pub struct MenuScreenTypesState {
 }
 
 impl MenuScreenTypesState {
+    // choose network menu functions - begin
     pub fn init_choose_network_menu() -> Self {
-        let mut choices: Vec<&'static str, 20> = Vec::new();
-
-        choices.push(" Main").unwrap();
-        choices.push(" Testnet").unwrap();
-        choices.push(" Signet").unwrap();
-
-        Self {
-            prompt: "Choose your network:",
-            choices: choices,
-            hover_index: 0,
-            menu_type: MenuTypes::ChooseNetworkMenuType,
-        }
+        choose_network_menu_helpers::init_choose_network_menu()
     }
 
     pub fn get_network_from_choice(&self) -> networks::Networks {
-        match self.hover_index {
-            0 => Networks::Mainnet,
-            1 => Networks::Testnet,
-            2 => Networks::Signet,
-            _ => panic!("Invalid state - only 3 network choices"),
-        }
+        choose_network_menu_helpers::get_network_from_choice(self)
     }
+    // choose network menu functions - end
 
     pub fn render(
         &self,

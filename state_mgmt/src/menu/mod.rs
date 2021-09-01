@@ -2,6 +2,7 @@
 
 use core::fmt::Error;
 
+pub mod choose_network_menu_helpers;
 pub mod menu_screen_state;
 pub mod screen_types;
 pub use crate::display_type;
