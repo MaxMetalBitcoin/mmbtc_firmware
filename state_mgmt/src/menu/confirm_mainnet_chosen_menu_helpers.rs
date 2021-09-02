@@ -30,3 +30,30 @@ pub fn get_next_menu_on_confirm_mainnet_menu(
         _ => panic!("Invalid state - only 2 choices, yes or no"),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn init_confirm_mainnet_chosen_menu_returns_the_right_content() {
+        let menu = init_confirm_mainnet_chosen_menu();
+
+        assert_eq!(menu.prompt, "Are you sure? This is REAL money:");
+        assert_eq!(menu.choices.len(), 2);
+        assert_eq!(menu.choices[0], " No");
+        assert_eq!(menu.choices[1], " Yes");
+        assert_eq!(menu.hover_index, 0);
+        assert_eq!(menu.menu_type, MenuTypes::ConfirmMainnetMenuType);
+    }
+
+    #[test]
+    fn when_on_no_choice_and_hit_enter_send_back_to_choose_network_menu() {
+        let menu = init_confirm_mainnet_chosen_menu();
+        assert_eq!(menu.hover_index, 0);
+
+        let next_menu = menu.get_next_menu_on_confirm_mainnet_menu();
+
+        assert_eq!(next_menu.menu_type, MenuTypes::ChooseNetworkMenuType);
+    }
+}

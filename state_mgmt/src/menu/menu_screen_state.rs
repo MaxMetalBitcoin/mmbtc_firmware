@@ -16,7 +16,7 @@ use crate::mm_state_action;
 use crate::networks;
 use crate::{display_type, networks::Networks};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MenuTypes {
     ChooseNetworkMenuType,
     ConfirmMainnetMenuType,
@@ -116,5 +116,33 @@ impl MenuScreenTypesState {
             }
             _ => false,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::mm_state_action::MMStateAction;
+
+    #[test]
+    fn test_update_state_doesnt_go_past_ends() {
+        let mut menu = choose_network_menu_helpers::init_choose_network_menu();
+
+        assert_eq!(menu.choices.len(), 3); // so hover_index of 2 is max
+        assert_eq!(menu.hover_index, 0);
+
+        // test top case - trying to go up past
+        menu.update_state(MMStateAction::Up);
+        assert_eq!(menu.hover_index, 0);
+
+        menu.update_state(MMStateAction::Down);
+        assert_eq!(menu.hover_index, 1);
+
+        menu.update_state(MMStateAction::Down);
+        assert_eq!(menu.hover_index, 2);
+
+        // test bottom case - trying to go down past
+        menu.update_state(MMStateAction::Down);
+        assert_eq!(menu.hover_index, 2);
     }
 }
