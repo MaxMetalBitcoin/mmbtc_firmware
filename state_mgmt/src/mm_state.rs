@@ -50,12 +50,25 @@ impl MMState {
                     menu::menu_screen_state::MenuTypes::ChooseNetworkMenuType => {
                         if action == mm_state_action::MMStateAction::Enter {
                             self.network = menu_screen_state.get_network_from_choice();
+                            self.current_screen = menu::screen_types::ScreenTypes::MenuScreenTypes(
+                                menu_screen_state.get_next_menu_on_choose_network_menu(),
+                            );
+
                             true
                         } else {
                             menu_screen_state.update_state(action)
                         }
                     }
-                    _ => false,
+                    menu::menu_screen_state::MenuTypes::ConfirmMainnetMenuType => {
+                        if action == mm_state_action::MMStateAction::Enter {
+                            self.current_screen = menu::screen_types::ScreenTypes::MenuScreenTypes(
+                                menu_screen_state.get_next_menu_on_confirm_mainnet_menu(),
+                            );
+                            true
+                        } else {
+                            menu_screen_state.update_state(action)
+                        }
+                    }
                 }
             }
             _ => false,
@@ -83,6 +96,9 @@ impl MMState {
             menu::screen_types::ScreenTypes::MenuScreenTypes(menu_screen_state) => {
                 match menu_screen_state.menu_type {
                     menu::menu_screen_state::MenuTypes::ChooseNetworkMenuType => {
+                        display = menu_screen_state.render(display).unwrap()
+                    }
+                    menu::menu_screen_state::MenuTypes::ConfirmMainnetMenuType => {
                         display = menu_screen_state.render(display).unwrap()
                     }
                 }

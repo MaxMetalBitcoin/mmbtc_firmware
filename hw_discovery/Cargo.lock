@@ -133,6 +133,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "embedded-graphics"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "40a69991ceb896bd4810a0cf2bcc46fc94b7860573c71f965d8e5b3d66942fed"
+dependencies = [
+ "byteorder",
+]
+
+[[package]]
 name = "embedded-hal"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -214,6 +223,7 @@ dependencies = [
  "heapless",
  "nb 1.0.0",
  "panic-halt",
+ "state_mgmt",
 ]
 
 [[package]]
@@ -355,6 +365,14 @@ name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
+
+[[package]]
+name = "state_mgmt"
+version = "0.1.0"
+dependencies = [
+ "embedded-graphics",
+ "heapless",
+]
 
 [[package]]
 name = "stm32f30x"

@@ -18,12 +18,21 @@ use heapless::String;
 use heapless::Vec;
 use panic_halt as _;
 
+// use state_mgmt;
+
 #[entry]
 fn main() -> ! {
     let mut cp = cortex_m::Peripherals::take().unwrap();
     let mut dp = stm32f30x::Peripherals::take().unwrap();
 
     // &mut rcc.ahbenr(|w| w.iopeen().set_bit())
+
+    let mut sm = state_mgmt::mm_state::MMState::new();
+    iprintln!(&mut cp.ITM.stim[0], "{:?}", sm.current_screen);
+    let did_update = sm.update_state(state_mgmt::mm_state_action::MMStateAction::Enter);
+
+    iprintln!(&mut cp.ITM.stim[0], "{:?}", did_update);
+    iprintln!(&mut cp.ITM.stim[0], "{:?}", sm.current_screen);
 
     let mut rcc_2 = dp.RCC.constrain();
     let mut flash_2 = dp.FLASH.constrain();

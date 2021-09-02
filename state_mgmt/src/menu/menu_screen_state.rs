@@ -11,6 +11,7 @@ use embedded_graphics::{
 use heapless::Vec;
 
 use crate::menu::choose_network_menu_helpers;
+use crate::menu::confirm_mainnet_chosen_menu_helpers;
 use crate::mm_state_action;
 use crate::networks;
 use crate::{display_type, networks::Networks};
@@ -18,6 +19,7 @@ use crate::{display_type, networks::Networks};
 #[derive(Debug, Clone)]
 pub enum MenuTypes {
     ChooseNetworkMenuType,
+    ConfirmMainnetMenuType,
 }
 
 #[derive(Debug, Clone)]
@@ -37,7 +39,21 @@ impl MenuScreenTypesState {
     pub fn get_network_from_choice(&self) -> networks::Networks {
         choose_network_menu_helpers::get_network_from_choice(self)
     }
+
+    pub fn get_next_menu_on_choose_network_menu(&self) -> MenuScreenTypesState {
+        choose_network_menu_helpers::get_next_menu_on_choose_network_menu(self)
+    }
     // choose network menu functions - end
+
+    // confirm mainnet chosen - begin
+    pub fn init_confirm_mainnet_chosen_menu() -> Self {
+        confirm_mainnet_chosen_menu_helpers::init_confirm_mainnet_chosen_menu()
+    }
+
+    pub fn get_next_menu_on_confirm_mainnet_menu(&self) -> Self {
+        confirm_mainnet_chosen_menu_helpers::get_next_menu_on_confirm_mainnet_menu(self)
+    }
+    // confirm mainnet chosen - end
 
     pub fn render(
         &self,
