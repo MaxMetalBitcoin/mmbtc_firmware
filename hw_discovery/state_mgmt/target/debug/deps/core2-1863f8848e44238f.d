@@ -1,0 +1,12 @@
+/Users/maxdignan/Documents/Bitcoin/hardware_wallets/mmbtc_firmware/state_mgmt/target/debug/deps/core2-1863f8848e44238f.rmeta: /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/lib.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/error.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/mod.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/cursor.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/error.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/impls.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/traits.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/util.rs
+
+/Users/maxdignan/Documents/Bitcoin/hardware_wallets/mmbtc_firmware/state_mgmt/target/debug/deps/core2-1863f8848e44238f.d: /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/lib.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/error.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/mod.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/cursor.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/error.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/impls.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/traits.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/util.rs
+
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/lib.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/error.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/mod.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/cursor.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/error.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/impls.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/traits.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/core2-0.3.1/src/io/util.rs:

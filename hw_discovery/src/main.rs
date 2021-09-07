@@ -1,9 +1,16 @@
+#![feature(alloc_error_handler)]
 #![no_main]
 #![no_std]
 
+extern crate alloc;
+
+use alloc::vec;
+use core::alloc::Layout;
 use core::fmt::Write;
+use core::panic::PanicInfo;
 use cortex_m::iprintln;
 use cortex_m_rt::entry;
+
 use embedded_hal::spi::{Mode, Phase, Polarity};
 use embedded_sdmmc::{DirEntry, TimeSource, Timestamp};
 use f3::hal::{
@@ -18,7 +25,17 @@ use heapless::String;
 use heapless::Vec;
 use panic_halt as _;
 
-// use state_mgmt;
+use state_mgmt;
+
+use alloc_cortex_m::CortexMHeap;
+use state_mgmt::bitcoin::secp256k1::{ffi::types::AlignedType, Secp256k1};
+use state_mgmt::bitcoin::{Address, Network, PrivateKey};
+
+// this is the allocator the application will use
+#[global_allocator]
+static ALLOCATOR: CortexMHeap = CortexMHeap::empty();
+
+const HEAP_SIZE: usize = 1024 * 512; // 512 KB
 
 #[entry]
 fn main() -> ! {
@@ -33,6 +50,26 @@ fn main() -> ! {
 
     iprintln!(&mut cp.ITM.stim[0], "{:?}", did_update);
     iprintln!(&mut cp.ITM.stim[0], "{:?}", sm.current_screen);
+
+    iprintln!(&mut cp.ITM.stim[0], "heap size {}", HEAP_SIZE);
+
+    unsafe { ALLOCATOR.init(cortex_m_rt::heap_start() as usize, HEAP_SIZE) }
+
+    let size = Secp256k1::preallocate_size();
+    iprintln!(&mut cp.ITM.stim[0], "secp buf size {}", size * 16);
+
+    // Load a private key
+    let raw = "L1HKVVLHXiUhecWnwFYF6L3shkf1E12HUmuZTESvBXUdx3yqVP1D";
+    let pk = PrivateKey::from_wif(raw).unwrap();
+    iprintln!(&mut cp.ITM.stim[0], "Seed WIF: {}", pk);
+
+    // let mut buf_ful = vec![AlignedType::zeroed(); size];
+    // let secp = Secp256k1::preallocated_new(&mut buf_ful).unwrap();
+
+    // // Derive address
+    // let pubkey = pk.public_key(&secp);
+    // let address = Address::p2wpkh(&pubkey, Network::Bitcoin).unwrap();
+    // iprintln!(&mut cp.ITM.stim[0], "Address: {}", address);
 
     let mut rcc_2 = dp.RCC.constrain();
     let mut flash_2 = dp.FLASH.constrain();
@@ -170,6 +207,15 @@ fn main() -> ! {
     }
 
     loop {
+        cortex_m::asm::nop();
+    }
+}
+
+// define what happens in an Out Of Memory (OOM) condition
+#[alloc_error_handler]
+fn alloc_error(_layout: Layout) -> ! {
+    loop {
+        cortex_m::asm::bkpt();
         cortex_m::asm::nop();
     }
 }

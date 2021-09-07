@@ -17,4 +17,7 @@ f3 = "0.6.1"
 embedded-hal = "0.2.4"
 embedded-sdmmc = "0.3.0"
 heapless = "0.7.5"
-state_mgmt = { path = "../state_mgmt" }
+state_mgmt = { path = "./state_mgmt" }
+
+[dependencies.alloc-cortex-m]
+version = "0.4.1"
