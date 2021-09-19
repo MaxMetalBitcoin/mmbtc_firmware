@@ -9,7 +9,8 @@ edition = "2018"
 cortex-m = "0.7.3"
 cortex-m-rt = { version = "0.6.15" }
 # Panic behaviour, see https://crates.io/keywords/panic-impl for alternatives
-panic-halt = "0.2.0"
+# panic-halt = "0.2.0"
+panic-itm = "0.4.2"
 nb = "1"
 # Replace stm32f303xc with your target chip, see next section for more info
 # stm32f3xx-hal = { version = "0.7.0", features = ["ld", "rt", "stm32f303xc"] }
@@ -21,3 +22,8 @@ state_mgmt = { path = "./state_mgmt" }
 
 [dependencies.alloc-cortex-m]
 version = "0.4.1"
+
+[dependencies.bitcoin]
+version = "0.27.0"
+default-features = false
+features = ["no-std", "secp-lowmemory"]
