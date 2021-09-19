@@ -1,4 +1,5 @@
 hw_discovery/target/**
 simulator/target
 state_mgmt/target
+target/
 

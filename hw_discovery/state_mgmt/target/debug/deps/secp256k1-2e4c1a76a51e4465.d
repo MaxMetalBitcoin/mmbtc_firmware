@@ -1,0 +1,11 @@
+/Users/maxdignan/Documents/Bitcoin/hardware_wallets/mmbtc_firmware/state_mgmt/target/debug/deps/secp256k1-2e4c1a76a51e4465.rmeta: /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/lib.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/macros.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/context.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/constants.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/ecdh.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/key.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/schnorrsig.rs
+
+/Users/maxdignan/Documents/Bitcoin/hardware_wallets/mmbtc_firmware/state_mgmt/target/debug/deps/secp256k1-2e4c1a76a51e4465.d: /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/lib.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/macros.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/context.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/constants.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/ecdh.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/key.rs /Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/schnorrsig.rs
+
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/lib.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/macros.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/context.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/constants.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/ecdh.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/key.rs:
+/Users/maxdignan/.cargo/registry/src/github.com-1ecc6299db9ec823/secp256k1-0.20.3/src/schnorrsig.rs:
