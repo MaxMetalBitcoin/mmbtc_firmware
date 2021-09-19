@@ -1,8 +1,10 @@
 #![no_std]
 
-use core::fmt::Error;
 use core::str;
+use core::{borrow::Borrow, fmt::Error};
 
+extern crate alloc;
+use bitcoin::secp256k1::{AllPreallocated, Secp256k1};
 use heapless::Vec;
 
 // use alloc::vec::Vec;
@@ -14,6 +16,7 @@ use embedded_graphics::{
     text_style,
 };
 
+use crate::bitcoin;
 use crate::display_type;
 use crate::menu;
 use crate::mm_state_action;
@@ -23,13 +26,22 @@ use crate::networks;
 pub struct MMState {
     pub network: networks::Networks,
     pub current_screen: menu::screen_types::ScreenTypes,
+    pub private_key: bitcoin::PrivateKey,
 }
 
 impl MMState {
     pub fn new() -> MMState {
+        // hprintln!("secp buf size {}", size * 16).unwrap();
+
+        // Load a private key
+        let raw = "L1HKVVLHXiUhecWnwFYF6L3shkf1E12HUmuZTESvBXUdx3yqVP1D";
+        let pk = bitcoin::PrivateKey::from_wif(raw).unwrap();
+        // hprintln!("Seed WIF: {}", pk).unwrap();
+
         MMState {
             network: networks::Networks::Testnet,
             current_screen: menu::screen_types::ScreenTypes::LoadScreenTypes,
+            private_key: pk,
         }
     }
 
@@ -88,6 +100,28 @@ impl MMState {
                 );
 
                 Text::new("Loading...", Point::new(5, 5))
+                    .into_styled(text_style)
+                    .draw(&mut display)
+                    .unwrap();
+
+                let size = bitcoin::secp256k1::Secp256k1::preallocate_size();
+
+                let zeroed = bitcoin::secp256k1::ffi::types::AlignedType::zeroed();
+                let mut buf_ful = alloc::vec![zeroed; size];
+                let secp = bitcoin::secp256k1::Secp256k1::preallocated_new(&mut buf_ful).unwrap();
+
+                Text::new(
+                    alloc::format!("{}", self.private_key).as_str(),
+                    Point::new(5, 20),
+                )
+                .into_styled(text_style)
+                .draw(&mut display)
+                .unwrap();
+
+                let pubkey = self.private_key.public_key(&secp);
+                let address = bitcoin::Address::p2wpkh(&pubkey, bitcoin::Network::Bitcoin).unwrap();
+
+                Text::new(alloc::format!("{}", address).as_str(), Point::new(5, 30))
                     .into_styled(text_style)
                     .draw(&mut display)
                     .unwrap();
