@@ -2,7 +2,10 @@
 
 extern crate alloc;
 
-use alloc::boxed::Box;
+use alloc::{
+    boxed::Box,
+    string::{String, ToString},
+};
 use core::{fmt::Error, ops::Deref};
 use embedded_graphics::{
     drawable::Drawable,
@@ -22,11 +25,11 @@ use crate::{mm_state::MenuTypes, mm_state_action};
 use super::confirm_mainnet_chosen_menu;
 
 pub fn initialize_menu(mut state: &mut MMState) -> bool {
-    let mut menu_choices: Vec<Box<&str>, 20> = Vec::new();
+    let mut menu_choices: Vec<Box<String>, 20> = Vec::new();
 
-    menu_choices.push(Box::new(" Main")).unwrap();
-    menu_choices.push(Box::new(" Testnet")).unwrap();
-    menu_choices.push(Box::new(" Signet")).unwrap();
+    menu_choices.push(Box::new(" Main".to_string())).unwrap();
+    menu_choices.push(Box::new(" Testnet".to_string())).unwrap();
+    menu_choices.push(Box::new(" Signet".to_string())).unwrap();
 
     let raw = "L1HKVVLHXiUhecWnwFYF6L3shkf1E12HUmuZTESvBXUdx3yqVP1D";
     let pk = bitcoin::PrivateKey::from_wif(raw).unwrap();
@@ -34,7 +37,7 @@ pub fn initialize_menu(mut state: &mut MMState) -> bool {
     state.menu_choices = menu_choices;
     state.current_screen = ScreenTypes::MenuScreenType;
     state.menu_type = MenuTypes::ChooseNetworkMenuType;
-    state.menu_prompt = Box::new("Choose you network:");
+    state.menu_prompt = Box::new("Choose you network:".to_string());
     state.private_key = pk;
 
     true

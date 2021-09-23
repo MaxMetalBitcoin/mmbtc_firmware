@@ -6,6 +6,7 @@ use core::{borrow::Borrow, fmt::Error};
 
 extern crate alloc;
 use alloc::boxed::Box;
+use alloc::string::{String, ToString};
 use bitcoin::secp256k1::{AllPreallocated, Secp256k1};
 use heapless::Vec;
 
@@ -39,19 +40,19 @@ pub enum ScreenTypes {
 }
 
 #[derive(Debug)]
-pub struct MMState<'a> {
+pub struct MMState {
     pub current_screen: ScreenTypes,
     pub network: networks::Networks,
     pub private_key: bitcoin::PrivateKey,
     // pub current_screen: menu::screen_types::ScreenTypes<'a>,
     // pub private_key: bitcoin::PrivateKey,
-    pub menu_prompt: Box<&'a str>,
-    pub menu_choices: Vec<Box<&'a str>, 20>,
+    pub menu_prompt: Box<String>,
+    pub menu_choices: Vec<Box<String>, 20>,
     pub menu_hover_index: u16,
     pub menu_type: MenuTypes,
 }
 
-pub fn new<'a>() -> MMState<'a> {
+pub fn new() -> MMState {
     let raw = "L1HKVVLHXiUhecWnwFYF6L3shkf1E12HUmuZTESvBXUdx3yqVP1D";
     let pk = bitcoin::PrivateKey::from_wif(raw).unwrap();
 
@@ -59,7 +60,7 @@ pub fn new<'a>() -> MMState<'a> {
         current_screen: ScreenTypes::LoadScreenType,
         network: networks::Networks::Testnet,
         private_key: pk,
-        menu_prompt: Box::new("Choose you network:"),
+        menu_prompt: Box::new("Choose you network:".to_string()),
         menu_choices: Vec::new(),
         menu_hover_index: 0,
         menu_type: MenuTypes::ChooseNetworkMenuType,

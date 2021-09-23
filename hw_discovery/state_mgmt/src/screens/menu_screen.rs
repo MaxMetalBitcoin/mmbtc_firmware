@@ -48,7 +48,7 @@ pub fn update_state(mut state: &mut MMState, action: mm_state_action::MMStateAct
             MenuTypes::ConfirmMainnetMenuType => {
                 menus::confirm_mainnet_chosen_menu::menu_item_selected(&mut state)
             }
-            MenuTypes::TestSignMenuType => true,
+            MenuTypes::TestSignMenuType => menus::test_signing_menu::menu_item_selected(&mut state),
         },
     }
 }
