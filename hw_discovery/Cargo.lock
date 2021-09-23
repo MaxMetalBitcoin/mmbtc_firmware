@@ -70,6 +70,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "base64-compat"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a8d4d2746f89841e49230dd26917df1876050f95abafafbe34f47cb534b88d7"
+dependencies = [
+ "byteorder",
+]
+
+[[package]]
 name = "bech32"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -81,6 +90,7 @@ version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a427b27dae305157520d86673f2393b3eb08d880609abfcffc6e3c3c820e764"
 dependencies = [
+ "base64-compat",
  "bech32",
  "bitcoin_hashes",
  "core2",

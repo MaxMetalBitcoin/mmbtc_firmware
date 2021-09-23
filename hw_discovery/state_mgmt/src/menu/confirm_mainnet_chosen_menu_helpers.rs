@@ -1,59 +1,64 @@
-#![no_std]
+// #![no_std]
 
-use heapless::Vec;
+// extern crate alloc;
 
-use crate::menu::choose_network_menu_helpers;
-use crate::menu::menu_screen_state::MenuScreenTypesState;
-use crate::menu::menu_screen_state::MenuTypes;
-use crate::networks;
+// use alloc::boxed::Box;
+// use heapless::Vec;
 
-pub fn init_confirm_mainnet_chosen_menu() -> MenuScreenTypesState {
-    let mut choices: Vec<&'static str, 20> = Vec::new();
+// use crate::menu::choose_network_menu_helpers;
+// use crate::menu::menu_screen_state::MenuScreenTypeState;
+// use crate::menu::menu_screen_state::MenuTypes;
+// use crate::menu::test_signing_menu;
+// use crate::networks;
 
-    choices.push(" No").unwrap();
-    choices.push(" Yes").unwrap();
+// pub fn init_confirm_mainnet_chosen_menu<'a>() -> MenuScreenTypeState<'a> {
+//     let mut choices: Vec<Box<&str>, 20> = Vec::new();
 
-    MenuScreenTypesState {
-        prompt: "Are you sure? This is REAL money:",
-        choices: choices,
-        hover_index: 0,
-        menu_type: MenuTypes::ConfirmMainnetMenuType,
-    }
-}
+//     choices.push(Box::new(" No")).unwrap();
+//     choices.push(Box::new(" Yes")).unwrap();
 
-pub fn get_next_menu_on_confirm_mainnet_menu(
-    menu_screen_types_state: &MenuScreenTypesState,
-) -> MenuScreenTypesState {
-    match menu_screen_types_state.hover_index {
-        0 => choose_network_menu_helpers::init_choose_network_menu(),
-        1 => init_confirm_mainnet_chosen_menu(),
-        _ => panic!("Invalid state - only 2 choices, yes or no"),
-    }
-}
+//     MenuScreenTypeState {
+//         prompt: Box::new("Are you sure? This is REAL money:"),
+//         choices,
+//         hover_index: 0,
+//         menu_type: MenuTypes::ConfirmMainnetMenuType,
+//     }
+// }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// pub fn get_next_menu_on_confirm_mainnet_menu<'a>(
+//     menu_screen_types_state: &MenuScreenTypeState,
+// ) -> MenuScreenTypeState<'a> {
+//     match menu_screen_types_state.hover_index {
+//         0 => choose_network_menu_helpers::init_choose_network_menu(),
+//         1 => choose_network_menu_helpers::init_choose_network_menu(),
+//         // 1 => test_signing_menu::init_test_signing_menu(),
+//         _ => panic!("Invalid state - only 2 choices, yes or no"),
+//     }
+// }
 
-    #[test]
-    fn init_confirm_mainnet_chosen_menu_returns_the_right_content() {
-        let menu = init_confirm_mainnet_chosen_menu();
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
 
-        assert_eq!(menu.prompt, "Are you sure? This is REAL money:");
-        assert_eq!(menu.choices.len(), 2);
-        assert_eq!(menu.choices[0], " No");
-        assert_eq!(menu.choices[1], " Yes");
-        assert_eq!(menu.hover_index, 0);
-        assert_eq!(menu.menu_type, MenuTypes::ConfirmMainnetMenuType);
-    }
+//     #[test]
+//     fn init_confirm_mainnet_chosen_menu_returns_the_right_content() {
+//         let menu = init_confirm_mainnet_chosen_menu();
 
-    #[test]
-    fn when_on_no_choice_and_hit_enter_send_back_to_choose_network_menu() {
-        let menu = init_confirm_mainnet_chosen_menu();
-        assert_eq!(menu.hover_index, 0);
+//         assert_eq!(menu.prompt, "Are you sure? This is REAL money:");
+//         assert_eq!(menu.choices.len(), 2);
+//         assert_eq!(menu.choices[0], " No");
+//         assert_eq!(menu.choices[1], " Yes");
+//         assert_eq!(menu.hover_index, 0);
+//         assert_eq!(menu.menu_type, MenuTypes::ConfirmMainnetMenuType);
+//     }
 
-        let next_menu = menu.get_next_menu_on_confirm_mainnet_menu();
+//     #[test]
+//     fn when_on_no_choice_and_hit_enter_send_back_to_choose_network_menu() {
+//         let menu = init_confirm_mainnet_chosen_menu();
+//         assert_eq!(menu.hover_index, 0);
 
-        assert_eq!(next_menu.menu_type, MenuTypes::ChooseNetworkMenuType);
-    }
-}
+//         let next_menu = menu.get_next_menu_on_confirm_mainnet_menu();
+
+//         assert_eq!(next_menu.menu_type, MenuTypes::ChooseNetworkMenuType);
+//     }
+// }

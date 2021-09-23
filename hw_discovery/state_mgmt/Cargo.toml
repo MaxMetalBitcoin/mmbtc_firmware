@@ -20,7 +20,7 @@ optional = true
 [dependencies.bitcoin]
 version = "0.27.0"
 default-features = false
-features = ["no-std", "secp-lowmemory"]
+features = ["no-std", "secp-lowmemory", "base64"]
 
 [features]
 default = []

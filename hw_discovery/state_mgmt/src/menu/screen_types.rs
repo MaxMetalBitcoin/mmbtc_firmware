@@ -1,9 +1,9 @@
-#![no_std]
+// #![no_std]
 
-use crate::menu;
+// use crate::menu;
 
-#[derive(Debug)]
-pub enum ScreenTypes {
-    LoadScreenTypes,
-    MenuScreenTypes(menu::menu_screen_state::MenuScreenTypesState),
-}
+// #[derive(Debug, Clone)]
+// pub enum ScreenTypes<'a> {
+//     LoadScreenType,
+//     MenuScreenType(menu::menu_screen_state::MenuScreenTypeState<'a>),
+// }
