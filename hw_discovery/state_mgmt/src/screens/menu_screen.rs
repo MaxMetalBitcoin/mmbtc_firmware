@@ -13,11 +13,13 @@ use embedded_graphics::{
 };
 use heapless::Vec;
 
-use crate::mm_state_action;
 use crate::networks;
 use crate::{display_type, networks::Networks};
 use crate::{menu::choose_network_menu_helpers, mm_state::MMState};
 use crate::{menu::confirm_mainnet_chosen_menu_helpers, mm_state::ScreenTypes};
+use crate::{mm_state::MenuTypes, mm_state_action};
+
+use super::menus;
 
 pub fn update_state(mut state: &mut MMState, action: mm_state_action::MMStateAction) -> bool {
     match action {
@@ -39,7 +41,15 @@ pub fn update_state(mut state: &mut MMState, action: mm_state_action::MMStateAct
         }
         mm_state_action::MMStateAction::Left => false,
         mm_state_action::MMStateAction::Right => false,
-        mm_state_action::MMStateAction::Enter => true,
+        mm_state_action::MMStateAction::Enter => match state.menu_type {
+            MenuTypes::ChooseNetworkMenuType => {
+                menus::choose_network_menu::menu_item_selected(&mut state)
+            }
+            MenuTypes::ConfirmMainnetMenuType => {
+                menus::confirm_mainnet_chosen_menu::menu_item_selected(&mut state)
+            }
+            MenuTypes::TestSignMenuType => true,
+        },
     }
 }
 

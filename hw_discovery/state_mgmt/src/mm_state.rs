@@ -52,25 +52,15 @@ pub struct MMState<'a> {
 }
 
 pub fn new<'a>() -> MMState<'a> {
-    // hprintln!("secp buf size {}", size * 16).unwrap();
-
-    // Load a private key
     let raw = "L1HKVVLHXiUhecWnwFYF6L3shkf1E12HUmuZTESvBXUdx3yqVP1D";
     let pk = bitcoin::PrivateKey::from_wif(raw).unwrap();
-    // hprintln!("Seed WIF: {}", pk).unwrap();
-
-    let mut menu_choices: Vec<Box<&str>, 20> = Vec::new();
-
-    menu_choices.push(Box::new(" Main")).unwrap();
-    menu_choices.push(Box::new(" Testnet")).unwrap();
-    menu_choices.push(Box::new(" Signet")).unwrap();
 
     MMState {
         current_screen: ScreenTypes::LoadScreenType,
         network: networks::Networks::Testnet,
         private_key: pk,
         menu_prompt: Box::new("Choose you network:"),
-        menu_choices,
+        menu_choices: Vec::new(),
         menu_hover_index: 0,
         menu_type: MenuTypes::ChooseNetworkMenuType,
     }
