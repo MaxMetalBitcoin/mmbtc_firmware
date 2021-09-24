@@ -26,13 +26,6 @@ use crate::mm_state_action;
 use crate::networks;
 use crate::screens;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum MenuTypes {
-    ChooseNetworkMenuType,
-    ConfirmMainnetMenuType,
-    TestSignMenuType,
-}
-
 #[derive(Debug, Clone)]
 pub enum ScreenTypes {
     LoadScreenType,
@@ -49,7 +42,7 @@ pub struct MMState {
     pub menu_prompt: Box<String>,
     pub menu_choices: Vec<Box<String>, 20>,
     pub menu_hover_index: u16,
-    pub menu_type: MenuTypes,
+    pub menu_type: screens::menus::MenuTypes,
 }
 
 pub fn new() -> MMState {
@@ -63,7 +56,7 @@ pub fn new() -> MMState {
         menu_prompt: Box::new("Choose you network:".to_string()),
         menu_choices: Vec::new(),
         menu_hover_index: 0,
-        menu_type: MenuTypes::ChooseNetworkMenuType,
+        menu_type: screens::menus::MenuTypes::ChooseNetworkMenuType,
     }
 }
 

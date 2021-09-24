@@ -22,11 +22,12 @@ use embedded_graphics::{
 };
 use heapless::Vec;
 
+use super::MenuTypes;
+use crate::mm_state_action;
 use crate::networks;
 use crate::{display_type, networks::Networks};
 use crate::{menu::choose_network_menu_helpers, mm_state::MMState};
 use crate::{menu::confirm_mainnet_chosen_menu_helpers, mm_state::ScreenTypes};
-use crate::{mm_state::MenuTypes, mm_state_action};
 
 use super::choose_network_menu;
 
@@ -60,9 +61,10 @@ pub fn initialize_menu(mut state: &mut MMState) -> bool {
     menu_choices.push(Box::new(" No".to_string())).unwrap();
     menu_choices.push(Box::new(" Yes".to_string())).unwrap();
 
-    state.menu_choices = menu_choices;
-    state.menu_prompt = Box::new("header".to_string());
     state.current_screen = ScreenTypes::MenuScreenType;
+    state.menu_prompt = Box::new("header".to_string());
+    state.menu_choices = menu_choices;
+    state.menu_hover_index = 0;
     state.menu_type = MenuTypes::TestSignMenuType;
 
     true

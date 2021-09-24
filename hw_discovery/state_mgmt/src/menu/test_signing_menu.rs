@@ -14,8 +14,8 @@ use core::str::FromStr;
 
 use crate::bitcoin::{self, util::psbt::PartiallySignedTransaction};
 use crate::menu::choose_network_menu_helpers;
-use crate::mm_state::MenuTypes;
 use crate::networks;
+use crate::screens::menus::MenuTypes;
 
 // pub fn init_test_signing_menu() -> MenuScreenTypeState<'static> {
 //     let mut choices: Vec<Box<&str>, 20> = Vec::new();

@@ -1,43 +1,45 @@
-{
-  "choose_network_menu": {
+[
+  {
+    "menuName": "choose_network_menu",
     "prompt": "What network do you want to use?",
     "choices": [
       {
         "name": "Main",
-        "extra-state-changes": [],
-        "next-menu": "confirm_mainnet_chosen_menu"
+        "extraStateChanges": [],
+        "nextMenu": "confirm_mainnet_chosen_menu"
       },
       {
         "name": "Testnet",
-        "extra-state-changes": [
+        "extraStateChanges": [
           "state.network = Networks::Testnet;"
         ],
-        "next-menu": "choose_network_menu"
+        "nextMenu": "choose_network_menu"
       },
       {
         "name": "Signet",
-        "extra-state-changes": [
+        "extraStateChanges": [
           "state.network = Networks::Signet;"
         ],
-        "next-menu": "choose_network_menu"
+        "nextMenu": "choose_network_menu"
       }
     ]
   },
-  "confirm_mainnet_chosen_menu": {
+  {
+    "menuName": "confirm_mainnet_chosen_menu",
     "prompt": "Are you sure that you want to use mainnet (real money)?",
     "choices": [
       {
         "name": "No",
-        "extra-state-changes": [],
-        "next-menu": "choose_network_menu"
+        "extraStateChanges": [],
+        "nextMenu": "choose_network_menu"
       },
       {
         "name": "Yes",
-        "extra-state-changes": [
+        "extraStateChanges": [
           "state.network = Networks::Mainnet;"
         ],
-        "next-menu": "test_signing_menu"
+        "nextMenu": "test_signing_menu"
       }
     ]
   }
-}
+]

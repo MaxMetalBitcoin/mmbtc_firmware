@@ -2,6 +2,7 @@
 
 extern crate alloc;
 
+use super::menus;
 use alloc::boxed::Box;
 use core::fmt::Error;
 use embedded_graphics::{
@@ -13,13 +14,13 @@ use embedded_graphics::{
 };
 use heapless::Vec;
 
+use super::*;
+use crate::mm_state_action;
 use crate::networks;
 use crate::{display_type, networks::Networks};
 use crate::{menu::choose_network_menu_helpers, mm_state::MMState};
 use crate::{menu::confirm_mainnet_chosen_menu_helpers, mm_state::ScreenTypes};
-use crate::{mm_state::MenuTypes, mm_state_action};
-
-use super::menus;
+use menus::MenuTypes;
 
 pub fn update_state(mut state: &mut MMState, action: mm_state_action::MMStateAction) -> bool {
     match action {
