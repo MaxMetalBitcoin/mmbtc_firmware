@@ -40,11 +40,11 @@ pub fn menu_item_selected(mut state: &mut MMState) -> bool {
         0 => confirm_mainnet_chosen_menu::initialize_menu(&mut state),
         1 => {
             state.network = Networks::Testnet;
-            true
+            main_menu::initialize_menu(&mut state)
         }
         2 => {
             state.network = Networks::Signet;
-            true
+            main_menu::initialize_menu(&mut state)
         }
         _ => false,
     }

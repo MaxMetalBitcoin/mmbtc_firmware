@@ -4,228 +4,203 @@
 
 extern crate alloc;
 
+use alloc::boxed::Box;
 use alloc::vec;
 use alloc::vec::Vec;
-use core::alloc::Layout;
+use cortex_m::Peripherals;
+use cortex_m::asm::delay;
+use cortex_m::delay::Delay;
+use cortex_m::peripheral::SYST;
+use cortex_m::peripheral::syst::SystClkSource;
+use cortex_m::prelude::{_embedded_hal_blocking_delay_DelayMs, _embedded_hal_blocking_spi_Write};
+use f3::hal::rcc::Rcc;
+use core::borrow::Borrow;
+use core::marker::PhantomData;
+use core::ops::Deref;
+use core::{alloc::Layout, pin::Pin};
 use core::fmt::Write;
 use core::panic::PanicInfo;
-use cortex_m::iprintln;
+use cortex_m::{asm::nop, iprintln};
 use cortex_m_rt::{entry, exception, ExceptionFrame};
 
-use embedded_hal::spi::{Mode, Phase, Polarity};
+use embedded_hal::{digital::v2::OutputPin, spi::{Mode, Phase, Polarity}, blocking::delay::DelayMs, };
 use embedded_sdmmc::{DirEntry, TimeSource, Timestamp};
-use f3::hal::{
-    gpio::{gpioa, gpioe, GpioExt},
-    prelude::_stm32f30x_hal_flash_FlashExt,
-    rcc::{Clocks, RccExt, APB2},
-    spi::Spi,
-    stm32f30x::{self, FLASH, GPIOA, RCC, SPI1},
-    time::Hertz,
-};
+use f3::hal::{gpio::{gpioa::{PA0, PA1, PA4, PA5, PA6, PA7}, gpioe, GpioExt, Output, PushPull, AF5},  i2c::SdaPin, prelude::_stm32f30x_hal_flash_FlashExt,  rcc::{Clocks, RccExt, APB2}, spi::{MisoPin, MosiPin, SckPin, Spi}, stm32f30x::{self, FLASH, GPIOA, RCC, SPI1 }, time::Hertz};
 use heapless::String;
-// use heapless::Vec;
-// use panic_halt as _;
 use panic_itm; // panic handler
+
+use embedded_graphics::{
+  egcircle, egrectangle, egtext, fonts::Font6x8, prelude::*, primitive_style, text_style,
+};
+
+use embedded_graphics_core::{primitives::rectangle::Rectangle, draw_target::DrawTarget, pixelcolor::Rgb565, geometry::{Size, Point}};
+
+use ili9341::{self, Ili9341};
+use display_interface;
 
 // use state_mgmt;
 
 use alloc_cortex_m::CortexMHeap;
-use bitcoin::{
-    secp256k1::{self, ffi::types::AlignedType, Secp256k1},
-    util::bip32::ExtendedPrivKey,
-    Address, Network, PrivateKey,
-};
-
 // this is the allocator the application will use
 #[global_allocator]
 static ALLOCATOR: CortexMHeap = CortexMHeap::empty();
 
 const HEAP_SIZE: usize = 1024 * 40; // 40 KB .. the RAM size on f3discovery
 
+struct my_delay;
+
+impl DelayMs<u16> for my_delay {
+  fn delay_ms(&mut self, ms: u16) {
+    delay(ms.into())
+  }
+}
+
+struct SPIWrapper {
+  spi: Box<Spi<SPI1, (PA5<AF5>, PA6<AF5>, PA7<AF5>)>>,
+}
+
+impl display_interface::WriteOnlyDataCommand for SPIWrapper {
+  fn send_commands(&mut self, cmd: display_interface::DataFormat<'_>) -> Result<(), display_interface::DisplayError> {
+    match cmd {
+      display_interface::DataFormat::U8(d) => {
+        self.spi.write(d);
+
+      },
+      display_interface::DataFormat::U16(d) => {
+        for item in d.iter() {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U16BE(d) => {
+        for item in d.iter() {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U16LE(d) => {
+        for item in d.iter() {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U8Iter(d) => {
+        for item in d {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U16BEIter(d) => {
+        for item in d {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U16LEIter(d) => {
+        for item in d {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      _ => {},
+    }
+    Ok(())
+  }
+  fn send_data(&mut self, buf: display_interface::DataFormat<'_>) -> Result<(), display_interface::DisplayError> {
+    match buf {
+      display_interface::DataFormat::U8(d) => {
+        self.spi.write(d);
+
+      },
+      display_interface::DataFormat::U16(d) => {
+        for item in d.iter() {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U16BE(d) => {
+        for item in d.iter() {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U16LE(d) => {
+        for item in d.iter() {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U8Iter(d) => {
+        for item in d {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U16BEIter(d) => {
+        for item in d {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      display_interface::DataFormat::U16LEIter(d) => {
+        for item in d {
+          self.spi.write(&item.to_be_bytes());
+        }
+      },
+      _ => {},
+    }
+    Ok(())
+  }
+}
+
 #[entry]
 fn main() -> ! {
     let mut cp = cortex_m::Peripherals::take().unwrap();
     let mut dp = stm32f30x::Peripherals::take().unwrap();
 
-    // &mut rcc.ahbenr(|w| w.iopeen().set_bit())
+    let mut rcc_2 = dp.RCC.constrain();
+    let mut flash_2 = dp.FLASH.constrain();
 
-    // let mut sm = state_mgmt::mm_state::MMState::new();
-    // iprintln!(&mut cp.ITM.stim[0], "{:?}", sm.current_screen);
-    // let did_update = sm.update_state(state_mgmt::mm_state_action::MMStateAction::Enter);
+    let clocks = rcc_2.cfgr.freeze(&mut flash_2.acr);
 
-    // iprintln!(&mut cp.ITM.stim[0], "{:?}", did_update);
-    // iprintln!(&mut cp.ITM.stim[0], "{:?}", sm.current_screen);
-    //
-    // iprintln!(&mut cp.ITM.stim[0], "heap size {}", HEAP_SIZE);
 
-    unsafe { ALLOCATOR.init(cortex_m_rt::heap_start() as usize, HEAP_SIZE) }
+    dp.GPIOA.moder.write(|w| {
+        w.moder0().output();
+        w.moder1().output();
+        w.moder4().output();
+        w.moder5().output();
+        w.moder6().output();
+        w.moder7().output()
+    });
 
-    let size = Secp256k1::preallocate_size();
-    // iprintln!(&mut cp.ITM.stim[0], "secp buf size {}", size * 16);
+    let mut gpioa = dp.GPIOA.split(&mut rcc_2.ahb);
 
-    // let mut buf_ful = vec![0; size];
-    let altz = AlignedType::zeroed();
-    let altxvec = vec![AlignedType::zeroed(); 1];
-    let pre_size = (HEAP_SIZE - 100) / 16;
-    let mut buf_ful2 = vec![AlignedType::zeroed(); pre_size];
-    let secp = Secp256k1::preallocated_new(&mut buf_ful2).unwrap();
 
-    // Load a private key
-    let raw = "L1HKVVLHXiUhecWnwFYF6L3shkf1E12HUmuZTESvBXUdx3yqVP1D";
-    let pkr: Result<PrivateKey, state_mgmt::bitcoin::util::key::Error> = PrivateKey::from_wif(raw);
-    // let xprv: Result<ExtendedPrivKey, state_mgmt::bitcoin::util::bip32::Error> =
-    // ExtendedPrivKey::new_master(Network::Bitcoin, &[1 as u8, 2 as u8]);
-    // if pkr.is_err() {
-    //     iprintln!(&mut cp.ITM.stim[0], "Is err");
-    // }
-    let pk = pkr.unwrap();
-    // iprintln!(&mut cp.ITM.stim[0], "Seed WIF: {}", pk);
+    let slave_select = gpioa
+        .pa4
+        .into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
+    let s_clock = gpioa.pa5.into_af5(&mut gpioa.moder, &mut gpioa.afrl);
+    let s_miso = gpioa.pa6.into_af5(&mut gpioa.moder, &mut gpioa.afrl);
+    let s_mosi = gpioa.pa7.into_af5(&mut gpioa.moder, &mut gpioa.afrl);
+    let s_dc = gpioa.pa0.into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
+    let s_reset = gpioa.pa1.into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
 
-    // let mut buf_ful = vec![AlignedType::zeroed(); size];
-    // let secp = Secp256k1::preallocated_new(&mut buf_ful).unwrap();
+    let spi: Spi<SPI1, (PA5<AF5>, PA6<AF5>, PA7<AF5>)> = Spi::spi1(
+      dp.SPI1,
+      (s_clock, s_miso, s_mosi),
+      Mode {
+          polarity: Polarity::IdleHigh,
+          phase: Phase::CaptureOnSecondTransition,
+      },
+      Hertz(1_000_000),
+      clocks,
+      &mut rcc_2.apb2,
+    );
 
-    // // Derive address
-    let pubkey = pk.public_key(&secp);
-    let address = Address::p2wpkh(&pubkey, Network::Bitcoin).unwrap();
-    // iprintln!(&mut cp.ITM.stim[0], "Address: {}", address);
+    let screen_card_spi = SPIWrapper {
+      spi: Box::new(spi),
+    };
 
-    // let mut rcc_2 = dp.RCC.constrain();
-    // let mut flash_2 = dp.FLASH.constrain();
 
-    // let mut flash = unsafe { &*FLASH::ptr() };
-    // let mut rcc = unsafe { &*RCC::ptr() };
+    match ili9341::Ili9341::new(screen_card_spi, s_reset, &mut my_delay {}, ili9341::Orientation::Portrait, ili9341::DisplaySize240x320) {
+      Ok(mut screen) => {
+          screen.fill_solid(&Rectangle {size: Size {height: 100, width: 100}, top_left: Point {x: 0, y: 0}}, Rgb565::new(120,120,120));
 
-    // let clocks = rcc_2.cfgr.freeze(&mut flash_2.acr);
-
-    // struct MyTimeSouce;
-    // impl TimeSource for MyTimeSouce {
-    //     fn get_timestamp(&self) -> embedded_sdmmc::Timestamp {
-    //         Timestamp {
-    //             year_since_1970: 0,
-    //             zero_indexed_month: 0,
-    //             zero_indexed_day: 0,
-    //             hours: 0,
-    //             minutes: 0,
-    //             seconds: 0,
-    //         }
-    //     }
-    // }
-
-    // rcc.ahbenr.write(|w| w.iopaen().set_bit());
-
-    // // dp.GPIOA.moder.write(|w| {
-    // //     w.moder4().();
-    // //     w.moder5().output();
-    // //     w.moder6().output();
-    // //     w.moder7().output()
-    // // });
-
-    // let mut gpioa = dp.GPIOA.split(&mut rcc_2.ahb);
-
-    // // let spi1: SPI1 = SPI1::
-    // // let mut apb2: APB2 = APB2 { _0: () };
-
-    // let slave_select = gpioa
-    //     .pa4
-    //     .into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
-    // let s_clock = gpioa.pa5.into_af5(&mut gpioa.moder, &mut gpioa.afrl);
-    // let s_miso = gpioa.pa6.into_af5(&mut gpioa.moder, &mut gpioa.afrl);
-    // let s_mosi = gpioa.pa7.into_af5(&mut gpioa.moder, &mut gpioa.afrl);
-
-    // UNCOMMENT ALL THIS TO GET THE SD CARD BACK
-    // let sd_card_spi = Spi::spi1(
-    //     dp.SPI1,
-    //     (s_clock, s_miso, s_mosi),
-    //     Mode {
-    //         polarity: Polarity::IdleLow,
-    //         phase: Phase::CaptureOnFirstTransition,
-    //     },
-    //     Hertz(4_000_000),
-    //     clocks,
-    //     &mut rcc_2.apb2,
-    // );
-
-    // let sd_mmc_spi = embedded_sdmmc::SdMmcSpi::new(sd_card_spi, slave_select);
-
-    // let mut cont = embedded_sdmmc::Controller::new(sd_mmc_spi, MyTimeSouce {});
-
-    // dp.GPIOE.odr.write(|w| w.odr8().set_bit());
-
-    // write_to.write_u8(100);
-
-    // UNCOMMENT ALL THIS TO GET THE SD CARD BACK
-    //
-    // match cont.device().init() {
-    //     Ok(_) => {
-    //         // cont.device().spi().borrow_mut();
-    //         // write!(uart, "OK!\nCard size...").unwrap();
-    //         match cont.device().card_size_bytes() {
-    //             Ok(size) => iprintln!(&mut cp.ITM.stim[0], "{}", size),
-    //             Err(e) => iprintln!(&mut cp.ITM.stim[0], "Err here"),
-    //         }
-
-    //         // write!(uart, "Volume 0...").unwrap();
-    //         iprintln!(&mut cp.ITM.stim[0], "1");
-
-    //         // for i in 0..=12 {
-    //         // let i = 0;
-    //         match cont.get_volume(embedded_sdmmc::VolumeIdx(0)) {
-    //             Ok(mut volume) => {
-    //                 let root_dir = cont.open_root_dir(&volume).unwrap();
-    //                 let mut index = 0;
-    //                 // let mut files: Vec<DirEntry, 20> = Vec::new();
-    //                 let res = cont.iterate_dir(&volume, &root_dir, |entry| {
-    //                     iprintln!(&mut cp.ITM.stim[0], "1{:?}", entry.name);
-    //                     iprintln!(&mut cp.ITM.stim[0], "2{:?}", entry.size);
-
-    //                     // if let Some(pointer) = files.get_mut(index) {
-    //                     //     *pointer = entry;
-    //                     // }
-    //                     // index += 1;
-    //                 });
-    //                 res.ok();
-
-    //                 let mut buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    //                 let mut file = cont
-    //                     .open_file_in_dir(
-    //                         &mut volume,
-    //                         &root_dir,
-    //                         "hello.txt",
-    //                         embedded_sdmmc::Mode::ReadOnly,
-    //                     )
-    //                     .unwrap();
-    //                 cont.read(&volume, &mut file, &mut buffer);
-    //                 iprintln!(&mut cp.ITM.stim[0], "2{:?}", index);
-    //                 // let mut file = cont
-    //                 //     .open_file_in_dir(
-    //                 //         &mut volume,
-    //                 //         &root_dir,
-    //                 //         "hello.txt",
-    //                 //         embedded_sdmmc::Mode::ReadOnly,
-    //                 //     )
-    //                 //     .unwrap();
-    //                 // let mut buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    //                 // cont.read(&volume, &mut file, &mut buffer).unwrap();
-
-    //                 // for item in buffer {
-    //                 //     iprintln!(&mut cp.ITM.stim[0], "{}", item)
-    //                 // }
-    //             }
-    //             Err(e) => {
-    //                 iprintln!(&mut cp.ITM.stim[0], "1{:?}", e);
-    //                 iprintln!(&mut cp.ITM.stim[0], "2{:?}", e);
-    //                 iprintln!(&mut cp.ITM.stim[0], "3{:?}", e);
-    //                 iprintln!(&mut cp.ITM.stim[0], "4{:?}", e)
-    //             }
-    //         }
-    //     }
-    //     Err(e) => {
-    //         iprintln!(&mut cp.ITM.stim[0], "1{:?}", e);
-    //         iprintln!(&mut cp.ITM.stim[0], "2{:?}", e);
-    //         iprintln!(&mut cp.ITM.stim[0], "3{:?}", e);
-    //         iprintln!(&mut cp.ITM.stim[0], "4{:?}", e)
-    //     }
-    // }
+              cortex_m::asm::nop();
+      }
+      Err(err) => {
+        cortex_m::asm::nop();
+      }
+    }
 
     loop {
         cortex_m::asm::nop();
@@ -243,21 +218,8 @@ fn alloc_error(_layout: Layout) -> ! {
 
 #[exception]
 fn HardFault(ef: &ExceptionFrame) -> ! {
-    // if let Ok(mut hstdout) = hio::hstdout() {
-    //     writeln!(hstdout, "{:#?}", ef).ok();
-    // }
-
     loop {
         cortex_m::asm::bkpt();
         cortex_m::asm::nop();
     }
 }
-
-// #[panic_handler]
-// #[link_section = ".text.asm_panic_handler"]
-// fn panic(_: &core::panic::PanicInfo) -> ! {
-//     loop {
-//         cortex_m::asm::bkpt();
-//     }
-//     // __cortex_m_should_not_panic();
-// }

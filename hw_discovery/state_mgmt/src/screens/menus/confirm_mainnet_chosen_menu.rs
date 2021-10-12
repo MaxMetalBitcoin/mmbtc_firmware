@@ -34,7 +34,7 @@ pub fn initialize_menu(mut state: &mut MMState) -> bool {
 pub fn menu_item_selected(mut state: &mut MMState) -> bool {
     match state.menu_hover_index {
         0 => choose_network_menu::initialize_menu(&mut state),
-        1 => test_signing_menu::initialize_menu(&mut state),
+        1 => main_menu::initialize_menu(&mut state),
         _ => false,
     }
 }

@@ -50,6 +50,12 @@ pub fn update_state(mut state: &mut MMState, action: mm_state_action::MMStateAct
                 menus::confirm_mainnet_chosen_menu::menu_item_selected(&mut state)
             }
             MenuTypes::TestSignMenuType => menus::test_signing_menu::menu_item_selected(&mut state),
+            MenuTypes::MainMenuType => menus::main_menu::menu_item_selected(&mut state),
+            MenuTypes::ListSeedsMenuType => menus::list_seeds::menu_item_selected(&mut state),
+            MenuTypes::ListWalletsMenuType => menus::list_wallets::menu_item_selected(&mut state),
+            MenuTypes::WhereToLoadTransactionMenuType => {
+                menus::where_to_load_transaction::menu_item_selected(&mut state)
+            }
         },
     }
 }
