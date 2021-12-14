@@ -284,12 +284,11 @@ dependencies = [
 
 [[package]]
 name = "ili9341"
-version = "0.5.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52897a923ee65051ae7da0f0b3d326c08d3b0998aa59346dc9a856e3f137c0a9"
+checksum = "3612bef36816cfd5fdba93d97ab8ee1bf29a530ca03ad760a6c6cfdcddca69ec"
 dependencies = [
- "display-interface",
- "embedded-graphics-core",
+ "embedded-graphics",
  "embedded-hal",
 ]
 

@@ -8,7 +8,6 @@ use alloc::boxed::Box;
 use alloc::vec;
 use alloc::vec::Vec;
 use cortex_m::Peripherals;
-use cortex_m::asm::delay;
 use cortex_m::delay::Delay;
 use cortex_m::peripheral::SYST;
 use cortex_m::peripheral::syst::SystClkSource;
@@ -30,12 +29,17 @@ use heapless::String;
 use panic_itm; // panic handler
 
 use embedded_graphics::{
-  egcircle, egrectangle, egtext, fonts::Font6x8, prelude::*, primitive_style, text_style,
+  fonts::{Font8x16, Text},
+  pixelcolor::Rgb565,
+  prelude::*,
+  primitives::{Circle, Rectangle},
+  style::{PrimitiveStyle, TextStyle},
 };
 
-use embedded_graphics_core::{primitives::rectangle::Rectangle, draw_target::DrawTarget, pixelcolor::Rgb565, geometry::{Size, Point}};
 
-use ili9341::{self, Ili9341};
+// use embedded_graphics_core::{primitives::rectangle::Rectangle, draw_target::DrawTarget, pixelcolor::Rgb565, geometry::{Size, Point}};
+
+use ili9341::{Ili9341, Orientation};
 use display_interface;
 
 // use state_mgmt;
@@ -47,13 +51,13 @@ static ALLOCATOR: CortexMHeap = CortexMHeap::empty();
 
 const HEAP_SIZE: usize = 1024 * 40; // 40 KB .. the RAM size on f3discovery
 
-struct my_delay;
+// struct my_delay;
 
-impl DelayMs<u16> for my_delay {
-  fn delay_ms(&mut self, ms: u16) {
-    delay(ms.into())
-  }
-}
+// impl DelayMs<u16> for my_delay {
+//   fn delay_ms(&mut self, ms: u16) {
+//     delay(ms.into())
+//   }
+// }
 
 struct SPIWrapper {
   spi: Box<Spi<SPI1, (PA5<AF5>, PA6<AF5>, PA7<AF5>)>>,
@@ -150,17 +154,18 @@ fn main() -> ! {
     let mut rcc_2 = dp.RCC.constrain();
     let mut flash_2 = dp.FLASH.constrain();
 
+    // let clocks = rcc_2.cfgr.hclk(Hertz(8_000_000)).sysclk(Hertz(48_000_000)).pclk1(Hertz(24_000_000)).freeze(&mut flash_2.acr);
     let clocks = rcc_2.cfgr.freeze(&mut flash_2.acr);
 
 
-    dp.GPIOA.moder.write(|w| {
-        w.moder0().output();
-        w.moder1().output();
-        w.moder4().output();
-        w.moder5().output();
-        w.moder6().output();
-        w.moder7().output()
-    });
+    // dp.GPIOA.moder.write(|w| {
+    //     w.moder0().output();
+    //     w.moder1().output();
+    //     w.moder4().output();
+    //     w.moder5().output();
+    //     w.moder6().output();
+    //     w.moder7().output()
+    // });
 
     let mut gpioa = dp.GPIOA.split(&mut rcc_2.ahb);
 
@@ -178,22 +183,36 @@ fn main() -> ! {
       dp.SPI1,
       (s_clock, s_miso, s_mosi),
       Mode {
-          polarity: Polarity::IdleHigh,
-          phase: Phase::CaptureOnSecondTransition,
+          polarity: Polarity::IdleLow,
+          phase: Phase::CaptureOnFirstTransition,
       },
-      Hertz(1_000_000),
+      Hertz(8_000_000),
       clocks,
       &mut rcc_2.apb2,
     );
 
-    let screen_card_spi = SPIWrapper {
-      spi: Box::new(spi),
-    };
+    // let screen_card_spi = SPIWrapper {
+    //   spi: Box::new(spi),
+    // };
+
+    let mut delayy = Delay::new(cp.SYST, clocks.sysclk().0);
 
 
-    match ili9341::Ili9341::new(screen_card_spi, s_reset, &mut my_delay {}, ili9341::Orientation::Portrait, ili9341::DisplaySize240x320) {
-      Ok(mut screen) => {
-          screen.fill_solid(&Rectangle {size: Size {height: 100, width: 100}, top_left: Point {x: 0, y: 0}}, Rgb565::new(120,120,120));
+    match Ili9341::new_spi(spi, slave_select, s_dc, s_reset, &mut delayy) {
+      Ok(mut display) => {
+          // screen.fill_solid(&Rectangle {size: Size {height: 100, width: 100}, top_left: Point {x: 0, y: 0}}, Rgb565::new(120,120,120));
+          display.set_orientation(Orientation::LandscapeFlipped);
+
+          let c = Circle::new(Point::new(20, 20), 50)
+              .into_styled(PrimitiveStyle::with_fill(Rgb565::RED));
+          let t = Text::new("Hello Rust!", Point::new(20, 16))
+              .into_styled(TextStyle::new(Font8x16, Rgb565::GREEN));
+          let r = Rectangle::new(Point::new(0, 0), Point::new(320, 240))
+              .into_styled(PrimitiveStyle::with_fill(Rgb565::BLACK));
+  
+          r.draw(&mut display).expect("draw failed");
+          c.draw(&mut display).expect("draw failed");
+          t.draw(&mut display).expect("draw failed");
 
               cortex_m::asm::nop();
       }
